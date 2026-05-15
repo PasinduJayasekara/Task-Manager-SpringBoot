@@ -10,13 +10,13 @@ FROM eclipse-temurin:21-jdk-jammy
 
 WORKDIR /app
 
-RUN useradd -m appuser
+RUN useradd -u 10001 -m appuser
 
 COPY --from=build /app/target/*.jar app.jar
 
-RUN chown appuser:appuser app.jar
+RUN chown -R 10001:10001 /app
 
-USER appuser
+USER 10001
 
 EXPOSE 8080
 
