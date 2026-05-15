@@ -1,10 +1,14 @@
 package com.pasindu.backend.service;
 
 import com.pasindu.backend.model.Task;
+import com.pasindu.backend.model.User;
 import com.pasindu.backend.repositary.TaskRepositary;
 import org.springframework.stereotype.Service;
 import com.pasindu.backend.dto.TaskRequestDTO;
 import com.pasindu.backend.dto.TaskResponseDTO;
+
+import com.pasindu.backend.repositary.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -12,6 +16,8 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepositary taskRepositary;
+
+    private final UserRepository userRepository;
 
     private TaskResponseDTO mapToResponseDTO(Task task) {
 
@@ -25,13 +31,18 @@ public class TaskService {
         return dto;
     }
 
-    public TaskService(TaskRepositary taskRepositary) {
-        this.taskRepositary = taskRepositary;
+    public TaskService(
+            TaskRepositary taskRepository,
+            UserRepository userRepository
+    ) {
+
+        this.taskRepositary = taskRepository;
+        this.userRepository = userRepository;
     }
 
     public List<TaskResponseDTO> getAllTasks() {
 
-        return taskRepositary.findAll()
+        return taskRepositary.findByUser(getCurrentUser())
                 .stream()
                 .map(this::mapToResponseDTO)
                 .toList();
@@ -44,6 +55,8 @@ public class TaskService {
         task.setTitle(dto.getTitle());
         task.setDescription(dto.getDescription());
         task.setCompleted(dto.isCompleted());
+
+        task.setUser(getCurrentUser());
 
         Task savedTask = taskRepositary.save(task);
 
@@ -68,5 +81,18 @@ public class TaskService {
 
     public void deleteTask(Long id) {
         taskRepositary.deleteById(id);
+    }
+
+    private User getCurrentUser() {
+
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
     }
 }

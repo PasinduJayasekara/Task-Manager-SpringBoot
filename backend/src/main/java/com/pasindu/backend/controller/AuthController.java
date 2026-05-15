@@ -6,6 +6,9 @@ import com.pasindu.backend.dto.RegisterRequestDTO;
 import com.pasindu.backend.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import com.pasindu.backend.model.User;
+import com.pasindu.backend.repositary.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -14,8 +17,15 @@ public class AuthController {
 
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
+    private final UserRepository userRepository;
+
+    public AuthController(
+            AuthService authService,
+            UserRepository userRepository
+    ) {
+
         this.authService = authService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/register")
@@ -30,5 +40,19 @@ public class AuthController {
             @Valid @RequestBody LoginRequestDTO request) {
 
         return authService.login(request);
+    }
+
+    @GetMapping("/me")
+    public User getCurrentUser() {
+
+        String email =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
     }
 }
