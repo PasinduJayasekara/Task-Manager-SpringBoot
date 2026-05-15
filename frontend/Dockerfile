@@ -17,4 +17,7 @@ COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-USER 10014
+RUN mkdir -p /var/cache/nginx/client_temp && \
+    chown -R nginx:nginx /var/cache/nginx
+
+USER nginx
