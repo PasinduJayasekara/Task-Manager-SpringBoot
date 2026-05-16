@@ -55,7 +55,20 @@ https://a26423eb-c079-4a70-8a4a-0d709c71ee46-prod.e1-us-east-azure.choreoapis.de
 
 ## Screenshots
 
-(Add screenshots later)
+### Deployed Application
+![Deployed Application](screenshots/deployed_application.png)
+
+### Frontend Deployment
+![Frontend Deployment](screenshots/frontend_deployment.png)
+
+### Backend Deployment
+![Backend Deployment](screenshots/backend_deployment.png)
+
+### Neon Database
+![Neon Database](screenshots/neon_db.png)
+
+### Project Structure
+![Project Structure](screenshots/project_structure.png)
 
 ## What I Learned
 
