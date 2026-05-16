@@ -1,4 +1,4 @@
-FROM node:20-alpine AS build
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -10,14 +10,13 @@ COPY . .
 
 RUN npm run build
 
+RUN npm install -g serve
 
-FROM nginx:alpine
+RUN addgroup -g 10001 appgroup && \
+    adduser -D -u 10001 -G appgroup appuser
 
-COPY --from=build /app/dist /usr/share/nginx/html
+USER 10001
 
-EXPOSE 80
+EXPOSE 4173
 
-RUN mkdir -p /var/cache/nginx/client_temp && \
-    chown -R nginx:nginx /var/cache/nginx
-
-USER nginx
+CMD ["serve", "-s", "dist", "-l", "4173"]
